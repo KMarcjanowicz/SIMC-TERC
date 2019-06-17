@@ -1,0 +1,93 @@
+<!DOCTYPE HTML>
+<html>
+  <head> 
+    <meta charset="utf-8">
+    <title>XPath</title>
+  </head>
+  <body>
+  Województwo<select id="woj" onchange="change(this.id, this.value)"></select><br/>
+  Powiat<select id="pow" onchange="change(this.id, this.value)"></select><br/>
+  Gmina<select id="gmi" onchange="change(this.id, this.value)"></select><br/>
+  Miasto<select id="mia" onchange="change(this.id, this.value)"></select><br/>
+  <div id="div"></div>
+  </body>
+  <script>
+    woj = ""
+    pow = ""
+    gmi = ""
+    mia = ""
+  	function loadDoc(x) {
+  		var xhttp = new XMLHttpRequest();
+  		xhttp.onreadystatechange = function() {
+    		if (this.readyState == 4 && this.status == 200) {
+     			switch (x) {
+            case "start":
+               sel = "<option></option>";
+               data = JSON.parse(this.responseText)
+               for (var index = 0; index < data.length; index++) {
+                 sel+="<option value='"+data[index].WOJ+"'>"+data[index].NAZWA+"</option>"
+               }
+               document.getElementById("woj").innerHTML = sel;
+               break;
+            case "woj":
+
+               sel = "<option></option>";
+               data = JSON.parse(this.responseText)
+               for (var index = 0; index < data.length; index++) {
+                 sel+="<option value='"+data[index].POW+"'>"+data[index].NAZWA+"</option>"
+               }
+               document.getElementById("pow").innerHTML = sel;
+               break;
+            case "pow":
+               sel = "<option></option>";
+               data = JSON.parse(this.responseText)
+               for (var index = 0; index < data.length; index++) {
+                 sel+="<option value='"+data[index].GMI+"'>"+data[index].NAZWA+" ("+data[index].NAZWA_DOD.slice(6)+")</option>"
+               }
+               document.getElementById("gmi").innerHTML = sel;
+               break;
+            case "gmi":
+               sel = "<option></option>";
+               data = JSON.parse(this.responseText)
+               for (var index = 0; index < data.length; index++) {
+                 sel+="<option value='"+data[index].NAZWA+"'>"+data[index].NAZWA+"</option>"
+               }
+               document.getElementById("mia").innerHTML = sel;
+               break;
+            case "mia":
+               
+               data = JSON.parse(this.responseText)
+               
+               document.getElementById("div").innerHTML = data;
+               break;   
+             default:
+               break;
+           }
+    		}
+  		};
+  		xhttp.open("GET", "ajax.php"+"?x="+x+"&woj="+woj+"&pow="+pow+"&gmi="+gmi, true);
+  		xhttp.send();
+	}
+
+  loadDoc("start", 0)
+  function change(id, value){
+    switch (id) {
+      case "woj":
+        woj = value
+        break;
+      case "pow":
+        pow = value
+        break;
+      case "gmi":
+        gmi = value
+        break;
+      case "mia":
+        mia = value
+        break;
+      default:
+        break;
+    }
+    loadDoc(id);
+  }
+  </script>
+</html>
